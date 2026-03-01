@@ -1,5 +1,5 @@
 repos:
-  # 기본 정리 훅
+  # 기본 정리 훅 (이건 유지해도 좋음)
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
@@ -8,23 +8,16 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
 
-  # 코드 포맷터 (자동 정렬)
+  # Ruff (flake8 + isort 대체, 자동 수정 가능)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        args: [--fix]
+
+  # Black (코드 포맷터)
   - repo: https://github.com/psf/black
     rev: 24.3.0
     hooks:
       - id: black
         language_version: python3
-
-  # import 자동 정렬
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: ["--profile", "black"]
-
-  # 린터 (코드 스타일 검사)
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        args: ["--max-line-length=88"]
