@@ -32,10 +32,7 @@ jobs:
     - name: Debug Info
       run: |
         python manage.py showmigrations todo
-        python - <<'PY'
-        from django.conf import settings
-        print("DATABASES =", settings.DATABASES)
-        PY
+        python manage.py shell -c "from django.conf import settings; print('DATABASES =', settings.DATABASES)"
 
     - name: Run Tests
       run: |
