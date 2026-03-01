@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+  <h2>Todo 수정</h2>
+
+  <div>
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" value="{{ todo.name }}">
+  </div>
+
+  <div>
+    <label for="description">Description:</label>
+    <textarea name="description" id="description">{{ todo.description }}</textarea>
+  </div>
+
+  <div>
+    <label for="complete">Complete:</label>
+    <input type="checkbox" name="complete" id="complete" {% if todo.complete %}checked{% endif %}>
+  </div>
+
+  <div>
+    <label for="exp">Experience Points:</label>
+    <input type="number" name="exp" id="exp" min="0" value="{{ todo.exp }}">
+  </div>
+
+  <button type="button" id="todoUpdate">저장</button>
+  <button type="button" onclick="history.back()">취소</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+const api = axios.create({
+  baseURL: "/",
+  // ✅ Content-Type 제거: FormData는 axios가 자동으로 multipart 설정
+});
+
+// ✅ CSRF 자동 주입 (create.html과 동일)
+api.interceptors.request.use(config => {
+  const csrfToken = document.cookie
+    .split("; ")
+    .find(row => row.startsWith("csrftoken"))
+    ?.split("=")[1];
+
+  if (csrfToken) {
+    config.headers["X-CSRFToken"] = csrfToken;
+  }
+  return config;
+});
+
+const todoId = "{{ todo.id }}";
+
+document.getElementById("todoUpdate").addEventListener("click", async () => {
+  try {
+    const formData = new FormData();
+
+    formData.append("name", document.getElementById("name").value);
+    formData.append("description", document.getElementById("description").value);
+    formData.append("complete", document.getElementById("complete").checked);
+    formData.append("exp", document.getElementById("exp").value || 0);
+
+    const res = await api.patch(`/todo/viewsets/view/${todoId}/`, formData);
+
+    console.log(res.data);
+
+    window.location.href = `/todo/detail/${todoId}/`;
+
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    alert("수정 실패");
+  }
+});
+</script>
+
+{% endblock %}
